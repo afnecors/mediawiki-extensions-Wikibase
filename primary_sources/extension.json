@@ -15,6 +15,7 @@
   "ResourceModules": {
     "ext.PrimarySources.Hello": {
       "scripts": [
+        "modules/ext.PrimarySources.globals.js",
         "modules/ext.PrimarySources.Hello.js"
       ]
     }
