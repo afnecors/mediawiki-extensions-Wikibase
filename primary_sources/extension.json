@@ -1,0 +1,23 @@
+{
+  "name": "PrimarySources",
+  "descriptionmsg": "primarysources-desc",
+  "license-name": "GPL-2.0+",
+  "type": "wikibase",
+  "MessagesDirs": {
+    "PrimarySources": [
+      "i18n"
+    ]
+  },
+  "ResourceFileModulePaths": {
+    "localBasePath": "",
+    "remoteExtPath": ""
+  },
+  "ResourceModules": {
+    "ext.PrimarySources.Hello": {
+      "scripts": [
+        "modules/ext.PrimarySources.Hello.js"
+      ]
+    }
+  },
+  "manifest_version": 1
+}

@@ -50,3 +50,6 @@ if ( !array_key_exists( 'wgEnableWikibaseClient', $GLOBALS ) || $GLOBALS['wgEnab
 		require_once __DIR__ . '/client/config/WikibaseClient.jenkins.php';
 	}
 }
+
+// PrimarySources
+require_once __DIR__ . '/primary_sources/PrimarySources.php';
