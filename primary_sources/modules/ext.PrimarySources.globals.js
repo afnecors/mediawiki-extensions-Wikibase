@@ -1,7 +1,13 @@
+/**
+ * Global vars.
+ *
+ */
+
 ( function ( mw, $ ) {
     'use strict';
 
-    mw.API = {
+    var PrimarySources = {};
+    PrimarySources.API = {
         'WIKIDATA_ENTITY_DATA_URL' :
             'https://www.wikidata.org/wiki/Special:EntityData/{{qid}}.json',
         'FREEBASE_ENTITY_DATA_URL' :
@@ -21,4 +27,31 @@
         '&page=Wikidata:Primary_sources_tool/URL_whitelist'
     };
 
+    PrimarySources.qid = null;
+
+    PrimarySources.getPossibleDatasets = function (callback) {
+        var now = Date.now();
+        if (localStorage.getItem('f2w_dataset')) {
+            var blacklist = JSON.parse(localStorage.getItem('f2w_dataset'));
+            if (!blacklist.timestamp) {
+                blacklist.timestamp = 0;
+            }
+            if (now - blacklist.timestamp < CACHE_EXPIRY) {
+                return callback(blacklist.data);
+            }
+        }
+        $.ajax({
+            url: FREEBASE_DATASETS
+        }).done(function(data) {
+            localStorage.setItem('f2w_dataset', JSON.stringify({
+                timestamp: now,
+                data: data
+            }));
+            return callback(data);
+        }).fail(function() {
+            debug.log('Could not obtain datasets');
+        });
+    };
+
+    mw.PrimarySources = PrimarySources;
 }( mediaWiki, jQuery ) );
