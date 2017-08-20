@@ -209,5 +209,7 @@
         '</div>'
     };
 
+    global.qid = null;
+
     ps.global = global;
 }( primarySources ) );
