@@ -35,3 +35,5 @@ project.index
 ## Sublime
 sublime-*
 sftp-config.json
+
+.DS_Store
