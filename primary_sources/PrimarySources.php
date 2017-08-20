@@ -6,7 +6,6 @@ if (function_exists('wfLoadExtension')) {
     // i18n
     $wgMessagesDirs['PrimarySources'] = __DIR__ . '/i18n';
 
-
     $wgAutoloadClasses['PrimarySourcesHooks'] = __DIR__ . '/PrimarySources.hooks.php';
 
     // Hooks
