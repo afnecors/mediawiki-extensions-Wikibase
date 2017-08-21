@@ -8,6 +8,7 @@
  *
  */
 ( function ( mw ) {
+    console.log('Primary Sources - PSFilterComp');
 
     mw.loader.using(
         ['jquery.tipsy', 'oojs-ui', 'wikibase.dataTypeStore'], function() {

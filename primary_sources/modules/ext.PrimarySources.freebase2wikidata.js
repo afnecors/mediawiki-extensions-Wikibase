@@ -442,7 +442,7 @@ $(function() {
                         var a = document.getElementById('f2w-' + id);
 
                         var onClick = function(e) {
-                            if (isUrl(e.target.textContent)) {
+                            if (util.isUrl(e.target.textContent)) {
                                 a.style.textDecoration = 'none';
                                 a.href = e.target.textContent;
                             } else {
@@ -825,7 +825,7 @@ $(function() {
     }
 
     // "http://research.google.com/pubs/vrandecic.html"
-    function isUrl(url) {
+    function util.isUrl(url) {
         if (typeof URL !== 'function') {
             return url.indexOf('http') === 0; // TODO: very bad fallback hack
         }
@@ -923,7 +923,7 @@ $(function() {
             };
         } else {
             value = JSON.parse(value);
-            if (isUrl(value)) {
+            if (util.isUrl(value)) {
                 return {
                     type: 'url',
                     value: normalizeUrl(value)

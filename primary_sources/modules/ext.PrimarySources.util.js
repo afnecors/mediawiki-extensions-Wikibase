@@ -56,6 +56,26 @@
         return qidRegEx.test(title) ? title : false;
     };
 
+    /**
+     * Check if a string is a URL
+     *
+     * @param url
+     * @returns {*}
+     */
+    // "http://research.google.com/pubs/vrandecic.html"
+    util.isUrl = function (url) {
+        if (typeof URL !== 'function') {
+            return url.indexOf('http') === 0;
+        }
+
+        try {
+            url = new URL(url.toString());
+            return url.protocol.indexOf('http') === 0 && url.host;
+        } catch (e) {
+            return false;
+        }
+    };
+
 
     // TODO check why there aren't cookie in mw obj
     // ps.util.dataset = mw.cookie.get('ps-dataset', null, '');
