@@ -391,7 +391,7 @@ $(function() {
                                 var claim = claims[i];
                                 if (
                                     claim.mainsnak.snaktype === 'value' &&
-                                    jsonToTsvValue(claim.mainsnak.datavalue) === object
+                                    util.jsonToTsvValue(claim.mainsnak.datavalue) === object
                                 ) {
                                     objectExists = true;
                                     break;
@@ -651,7 +651,7 @@ $(function() {
                 source.push({
                     sourceProperty: line[i].replace(/^S/, 'P'),
                     sourceObject: line[i + 1],
-                    sourceType: (tsvValueToJson(line[i + 1])).type,
+                    sourceType: (util.tsvValueToJson(line[i + 1])).type,
                     sourceId: id,
                     key: line[i] + '\t' + line[i + 1]
                 });
@@ -811,131 +811,131 @@ $(function() {
 
     function computeCoordinatesPrecision(latitude, longitude) {
         return Math.min(
-            Math.pow(10, -numberOfDecimalDigits(latitude)),
-            Math.pow(10, -numberOfDecimalDigits(longitude))
+            Math.pow(10, -util.numberOfDecimalDigits(latitude)),
+            Math.pow(10, -util.numberOfDecimalDigits(longitude))
         );
     }
 
-    function numberOfDecimalDigits(number) {
-        var parts = number.split('.');
-        if (parts.length < 2) {
-            return 0;
-        }
-        return parts[1].length;
-    }
+    // function util.numberOfDecimalDigits(number) {
+    //     var parts = number.split('.');
+    //     if (parts.length < 2) {
+    //         return 0;
+    //     }
+    //     return parts[1].length;
+    // }
 
-    // "http://research.google.com/pubs/vrandecic.html"
-    function util.isUrl(url) {
-        if (typeof URL !== 'function') {
-            return url.indexOf('http') === 0; // TODO: very bad fallback hack
-        }
+    // // "http://research.google.com/pubs/vrandecic.html"
+    // function util.isUrl(url) {
+    //     if (typeof URL !== 'function') {
+    //         return url.indexOf('http') === 0; // TODO: very bad fallback hack
+    //     }
+    //
+    //     try {
+    //         url = new URL(url.toString());
+    //         return url.protocol.indexOf('http') === 0 && url.host;
+    //     } catch (e) {
+    //         return false;
+    //     }
+    // }
 
-        try {
-            url = new URL(url.toString());
-            return url.protocol.indexOf('http') === 0 && url.host;
-        } catch (e) {
-            return false;
-        }
-    }
-
-    function tsvValueToJson(value) {
-        // From https://www.wikidata.org/wiki/Special:ListDatatypes and
-        // https://de.wikipedia.org/wiki/Wikipedia:Wikidata/Wikidata_Spielwiese
-        // https://www.wikidata.org/wiki/Special:EntityData/Q90.json
-
-        // Q1
-        var itemRegEx = /^Q\d+$/;
-
-        // P1
-        var propertyRegEx = /^P\d+$/;
-
-        // @43.3111/-16.6655
-        var coordinatesRegEx = /^@([+\-]?\d+(?:.\d+)?)\/([+\-]?\d+(?:.\d+))?$/;
-
-        // fr:"Les Misérables"
-        var languageStringRegEx = /^(\w+):("[^"\\]*(?:\\.[^"\\]*)*")$/;
-
-        // +2013-01-01T00:00:00Z/10
-        /* jshint maxlen: false */
-        var timeRegEx = /^[+-]\d+-\d\d-\d\dT\d\d:\d\d:\d\dZ\/\d+$/;
-        /* jshint maxlen: 80 */
-
-        // +/-1234.4567
-        var quantityRegEx = /^[+-]\d+(\.\d+)?$/;
-
-        if (itemRegEx.test(value)) {
-            return {
-                type: 'wikibase-item',
-                value: {
-                    'entity-type': 'item',
-                    'numeric-id': parseInt(value.replace(/^Q/, ''))
-                }
-            };
-        } else if (propertyRegEx.test(value)) {
-            return {
-                type: 'wikibase-property',
-                value: {
-                    'entity-type': 'property',
-                    'numeric-id': parseInt(value.replace(/^P/, ''))
-                }
-            };
-        } else if (coordinatesRegEx.test(value)) {
-            var latitude = value.replace(coordinatesRegEx, '$1');
-            var longitude = value.replace(coordinatesRegEx, '$2');
-            return {
-                type: 'globe-coordinate',
-                value: {
-                    latitude: parseFloat(latitude),
-                    longitude: parseFloat(longitude),
-                    altitude: null,
-                    precision: computeCoordinatesPrecision(latitude, longitude),
-                    globe: 'http://www.wikidata.org/entity/Q2'
-                }
-            };
-        } else if (languageStringRegEx.test(value)) {
-            return {
-                type: 'monolingualtext',
-                value: {
-                    language: value.replace(languageStringRegEx, '$1'),
-                    text: JSON.parse(value.replace(languageStringRegEx, '$2'))
-                }
-            };
-        } else if (timeRegEx.test(value)) {
-            var parts = value.split('/');
-            return {
-                type: 'time',
-                value: {
-                    time: parts[0],
-                    timezone: 0,
-                    before: 0,
-                    after: 0,
-                    precision: parseInt(parts[1]),
-                    calendarmodel: 'http://www.wikidata.org/entity/Q1985727'
-                }
-            };
-        } else if (quantityRegEx.test(value)) {
-            return {
-                type: 'quantity',
-                value: {
-                    amount: value,
-                    unit: '1'
-                }
-            };
-        } else {
-            value = JSON.parse(value);
-            if (util.isUrl(value)) {
-                return {
-                    type: 'url',
-                    value: normalizeUrl(value)
-                };
-            } else {
-                return {
-                    type: 'string',
-                    value: value
-                };
-            }
-        }
-    }
+    // function tsvValueToJson(value) {
+    //     // From https://www.wikidata.org/wiki/Special:ListDatatypes and
+    //     // https://de.wikipedia.org/wiki/Wikipedia:Wikidata/Wikidata_Spielwiese
+    //     // https://www.wikidata.org/wiki/Special:EntityData/Q90.json
+    //
+    //     // Q1
+    //     var itemRegEx = /^Q\d+$/;
+    //
+    //     // P1
+    //     var propertyRegEx = /^P\d+$/;
+    //
+    //     // @43.3111/-16.6655
+    //     var coordinatesRegEx = /^@([+\-]?\d+(?:.\d+)?)\/([+\-]?\d+(?:.\d+))?$/;
+    //
+    //     // fr:"Les Misérables"
+    //     var languageStringRegEx = /^(\w+):("[^"\\]*(?:\\.[^"\\]*)*")$/;
+    //
+    //     // +2013-01-01T00:00:00Z/10
+    //     /* jshint maxlen: false */
+    //     var timeRegEx = /^[+-]\d+-\d\d-\d\dT\d\d:\d\d:\d\dZ\/\d+$/;
+    //     /* jshint maxlen: 80 */
+    //
+    //     // +/-1234.4567
+    //     var quantityRegEx = /^[+-]\d+(\.\d+)?$/;
+    //
+    //     if (itemRegEx.test(value)) {
+    //         return {
+    //             type: 'wikibase-item',
+    //             value: {
+    //                 'entity-type': 'item',
+    //                 'numeric-id': parseInt(value.replace(/^Q/, ''))
+    //             }
+    //         };
+    //     } else if (propertyRegEx.test(value)) {
+    //         return {
+    //             type: 'wikibase-property',
+    //             value: {
+    //                 'entity-type': 'property',
+    //                 'numeric-id': parseInt(value.replace(/^P/, ''))
+    //             }
+    //         };
+    //     } else if (coordinatesRegEx.test(value)) {
+    //         var latitude = value.replace(coordinatesRegEx, '$1');
+    //         var longitude = value.replace(coordinatesRegEx, '$2');
+    //         return {
+    //             type: 'globe-coordinate',
+    //             value: {
+    //                 latitude: parseFloat(latitude),
+    //                 longitude: parseFloat(longitude),
+    //                 altitude: null,
+    //                 precision: computeCoordinatesPrecision(latitude, longitude),
+    //                 globe: 'http://www.wikidata.org/entity/Q2'
+    //             }
+    //         };
+    //     } else if (languageStringRegEx.test(value)) {
+    //         return {
+    //             type: 'monolingualtext',
+    //             value: {
+    //                 language: value.replace(languageStringRegEx, '$1'),
+    //                 text: JSON.parse(value.replace(languageStringRegEx, '$2'))
+    //             }
+    //         };
+    //     } else if (timeRegEx.test(value)) {
+    //         var parts = value.split('/');
+    //         return {
+    //             type: 'time',
+    //             value: {
+    //                 time: parts[0],
+    //                 timezone: 0,
+    //                 before: 0,
+    //                 after: 0,
+    //                 precision: parseInt(parts[1]),
+    //                 calendarmodel: 'http://www.wikidata.org/entity/Q1985727'
+    //             }
+    //         };
+    //     } else if (quantityRegEx.test(value)) {
+    //         return {
+    //             type: 'quantity',
+    //             value: {
+    //                 amount: value,
+    //                 unit: '1'
+    //             }
+    //         };
+    //     } else {
+    //         value = JSON.parse(value);
+    //         if (util.isUrl(value)) {
+    //             return {
+    //                 type: 'url',
+    //                 value: util.normalizeUrl(value)
+    //             };
+    //         } else {
+    //             return {
+    //                 type: 'string',
+    //                 value: value
+    //             };
+    //         }
+    //     }
+    // }
 
     function matchClaims(wikidataClaims, freebaseClaims) {
         var existingClaims = {};
@@ -984,7 +984,7 @@ $(function() {
                             var wikidataObject = wikidataClaims[property][c];
 
                             if (wikidataObject.mainsnak.snaktype === 'value' &&
-                                jsonToTsvValue(wikidataObject.mainsnak.datavalue) === freebaseObject.object) {
+                                util.jsonToTsvValue(wikidataObject.mainsnak.datavalue) === freebaseObject.object) {
                                 isDuplicate = true;
                                 debug.log('Duplicate found! ' + property + ':' + freebaseObject.object);
 
@@ -1019,7 +1019,7 @@ $(function() {
             return [mainSnak.snaktype];
         }
 
-        var keys = [jsonToTsvValue(mainSnak.datavalue, mainSnak.datatype)];
+        var keys = [util.jsonToTsvValue(mainSnak.datavalue, mainSnak.datatype)];
 
         if (statement.qualifiers) {
             var qualifierKeyParts = [];
@@ -1027,7 +1027,7 @@ $(function() {
                 qualifiers.forEach(function(qualifier) {
                     qualifierKeyParts.push(
                         qualifier.property + '\t' +
-                        jsonToTsvValue(qualifier.datavalue, qualifier.datatype)
+                        util.jsonToTsvValue(qualifier.datavalue, qualifier.datatype)
                     );
                 });
             });
@@ -1038,53 +1038,53 @@ $(function() {
         return keys;
     }
 
-    function jsonToTsvValue(dataValue, dataType) {
-        if (!dataValue.type) {
-            debug.log('No data value type given');
-            return dataValue.value;
-        }
-        switch (dataValue.type) {
-            case 'quantity':
-                return dataValue.value.amount;
-            case 'time':
-                var time = dataValue.value.time;
+    // function util.jsonToTsvValue(dataValue, dataType) {
+    //     if (!dataValue.type) {
+    //         debug.log('No data value type given');
+    //         return dataValue.value;
+    //     }
+    //     switch (dataValue.type) {
+    //         case 'quantity':
+    //             return dataValue.value.amount;
+    //         case 'time':
+    //             var time = dataValue.value.time;
+    //
+    //             // Normalize the timestamp
+    //             if (dataValue.value.precision < 11) {
+    //                 time = time.replace('-01T', '-00T');
+    //             }
+    //             if (dataValue.value.precision < 10) {
+    //                 time = time.replace('-01-', '-00-');
+    //             }
+    //
+    //             return time + '/' + dataValue.value.precision;
+    //         case 'globecoordinate':
+    //             return '@' + dataValue.value.latitude + '/' + dataValue.value.longitude;
+    //         case 'monolingualtext':
+    //             return dataValue.value.language + ':' + JSON.stringify(dataValue.value.text);
+    //         case 'string':
+    //             var str = (dataType === 'url') ? util.normalizeUrl(dataValue.value)
+    //                 : dataValue.value;
+    //             return JSON.stringify(str);
+    //         case 'wikibase-entityid':
+    //             switch (dataValue.value['entity-type']) {
+    //                 case 'item':
+    //                     return 'Q' + dataValue.value['numeric-id'];
+    //                 case 'property':
+    //                     return 'P' + dataValue.value['numeric-id'];
+    //             }
+    //     }
+    //     debug.log('Unknown data value type ' + dataValue.type);
+    //     return dataValue.value;
+    // }
 
-                // Normalize the timestamp
-                if (dataValue.value.precision < 11) {
-                    time = time.replace('-01T', '-00T');
-                }
-                if (dataValue.value.precision < 10) {
-                    time = time.replace('-01-', '-00-');
-                }
-
-                return time + '/' + dataValue.value.precision;
-            case 'globecoordinate':
-                return '@' + dataValue.value.latitude + '/' + dataValue.value.longitude;
-            case 'monolingualtext':
-                return dataValue.value.language + ':' + JSON.stringify(dataValue.value.text);
-            case 'string':
-                var str = (dataType === 'url') ? normalizeUrl(dataValue.value)
-                    : dataValue.value;
-                return JSON.stringify(str);
-            case 'wikibase-entityid':
-                switch (dataValue.value['entity-type']) {
-                    case 'item':
-                        return 'Q' + dataValue.value['numeric-id'];
-                    case 'property':
-                        return 'P' + dataValue.value['numeric-id'];
-                }
-        }
-        debug.log('Unknown data value type ' + dataValue.type);
-        return dataValue.value;
-    }
-
-    function normalizeUrl(url) {
-        try {
-            return (new URL(url.toString())).href;
-        } catch (e) {
-            return url;
-        }
-    }
+    // function util.normalizeUrl(url) {
+    //     try {
+    //         return (new URL(url.toString())).href;
+    //     } catch (e) {
+    //         return url;
+    //     }
+    // }
 
     function prepareNewWikidataStatement(property, object) {
         getQualifiersAndSourcesLabels(object.qualifiers, object.sources)
@@ -1118,7 +1118,7 @@ $(function() {
                     var snak = snakBag[prop][j];
                     if (snak.snaktype === 'value') {
                         existingSources[prop]
-                            [jsonToTsvValue(snak.datavalue, snak.datatype)] = true;
+                            [util.jsonToTsvValue(snak.datavalue, snak.datatype)] = true;
                     }
                 }
             }
@@ -1245,12 +1245,12 @@ $(function() {
         });
     }
 
-    function escapeHtml(html) {
+    function util.escapeHtml(html) {
         return html
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\"/g, '&quot;');
+            .replace(/&/g, '&amp;') // &
+            .replace(/</g, '&lt;') // <
+            .replace(/>/g, '&gt;') // >
+            .replace(/\"/g, '&quot;'); // "
     }
 
     var valueHtmlCache = {};
@@ -1259,7 +1259,7 @@ $(function() {
         if (cacheKey in valueHtmlCache) {
             return valueHtmlCache[cacheKey];
         }
-        var parsed = tsvValueToJson(value);
+        var parsed = util.tsvValueToJson(value);
         var dataValue = {
             type: getValueTypeFromDataValueType(parsed.type),
             value: parsed.value
@@ -1412,13 +1412,13 @@ $(function() {
 
             return $.when.apply($, sourceItemsPromises).then(function() {
                 return HTML_TEMPLATES.sourceHtml
-                    .replace(/\{\{data-source\}\}/g, escapeHtml(JSON.stringify(source)))
+                    .replace(/\{\{data-source\}\}/g, util.escapeHtml(JSON.stringify(source)))
                     .replace(/\{\{data-property\}\}/g, property)
-                    .replace(/\{\{data-object\}\}/g, escapeHtml(object.object))
+                    .replace(/\{\{data-object\}\}/g, util.escapeHtml(object.object))
                     .replace(/\{\{statement-id\}\}/g, source[0].sourceId)
                     .replace(/\{\{source-html\}\}/g,
                         Array.prototype.slice.call(arguments).join(''))
-                    .replace(/\{\{data-qualifiers\}\}/g, escapeHtml(JSON.stringify(
+                    .replace(/\{\{data-qualifiers\}\}/g, util.escapeHtml(JSON.stringify(
                         object.qualifiers)));
             });
         });
@@ -1453,7 +1453,7 @@ $(function() {
         ).then(function(qualifiersHtml, sourcesHtml, formattedValue) {
             return HTML_TEMPLATES.statementViewHtml
                 .replace(/\{\{object\}\}/g, formattedValue)
-                .replace(/\{\{data-object\}\}/g, escapeHtml(object.object))
+                .replace(/\{\{data-object\}\}/g, util.escapeHtml(object.object))
                 .replace(/\{\{data-property\}\}/g, property)
                 .replace(/\{\{references\}\}/g,
                     object.sources.length === 1 ?
@@ -1462,9 +1462,9 @@ $(function() {
                 .replace(/\{\{sources\}\}/g, sourcesHtml)
                 .replace(/\{\{qualifiers\}\}/g, qualifiersHtml)
                 .replace(/\{\{statement-id\}\}/g, object.id)
-                .replace(/\{\{data-qualifiers\}\}/g, escapeHtml(JSON.stringify(
+                .replace(/\{\{data-qualifiers\}\}/g, util.escapeHtml(JSON.stringify(
                     object.qualifiers)))
-                .replace(/\{\{data-sources\}\}/g, escapeHtml(JSON.stringify(
+                .replace(/\{\{data-sources\}\}/g, util.escapeHtml(JSON.stringify(
                     object.sources)));
         });
     }
@@ -1557,7 +1557,7 @@ $(function() {
 
     // https://www.wikidata.org/w/api.php?action=help&modules=wbcreateclaim
     function createClaim(subject, predicate, object, qualifiers) {
-        var value = (tsvValueToJson(object)).value;
+        var value = (util.tsvValueToJson(object)).value;
         var api = new mw.Api();
         return api.postWithToken('csrf', {
             action: 'wbcreateclaim',
@@ -1574,7 +1574,7 @@ $(function() {
                     return data;
                 }
 
-                var value = (tsvValueToJson(qualifier.qualifierObject)).value;
+                var value = (util.tsvValueToJson(qualifier.qualifierObject)).value;
                 return api.postWithToken('csrf', {
                     action: 'wbsetqualifier',
                     claim: data.claim.id,
@@ -1632,7 +1632,7 @@ $(function() {
                 var mainSnak = claimObject.mainsnak;
                 if (
                     mainSnak.snaktype === 'value' &&
-                    jsonToTsvValue(mainSnak.datavalue, mainSnak.datatype) === object
+                    util.jsonToTsvValue(mainSnak.datavalue, mainSnak.datatype) === object
                 ) {
                     index = i;
                     break;
@@ -1658,7 +1658,7 @@ $(function() {
         });
 
         sourceSnaks.forEach(function(snak) {
-            var dataValue = tsvValueToJson(snak.sourceObject);
+            var dataValue = util.tsvValueToJson(snak.sourceObject);
             var type = getValueTypeFromDataValueType(dataValue.type);
 
             result[snak.sourceProperty].push({
