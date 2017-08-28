@@ -246,20 +246,20 @@ $(function() {
     /* jscs: enable */
     /* jshint ignore:end */
 
-    var debug = {
-        log: function(message) {
-            if (DEBUG) {
-                console.log('F2W: ' + message);
-            }
-        }
-    };
+    // var debug = {
+    //     log: function(message) {
+    //         if (DEBUG) {
+    //             console.log('F2W: ' + message);
+    //         }
+    //     }
+    // };
 
-    var qid = null;
-    function getQid() {
-        var qidRegEx = /^Q\d+$/;
-        var title = mw.config.get('wgTitle');
-        return qidRegEx.test(title) ? title : false;
-    }
+    // var qid = null;
+    // function getQid() {
+    //     var qidRegEx = /^Q\d+$/;
+    //     var title = mw.config.get('wgTitle');
+    //     return qidRegEx.test(title) ? title : false;
+    // }
 
     var dataset = mw.cookie.get('ps-dataset', null, '');
     var windowManager;
@@ -267,56 +267,56 @@ $(function() {
     (function init() {
 
         // Add random Primary Sources item button
-        (function createRandomFreebaseItemLink() {
-            var datasetLabel = (dataset === '') ? 'Primary Sources' : dataset;
-            var portletLink = $(mw.util.addPortletLink(
-                'p-navigation',
-                '#',
-                'Random ' + datasetLabel + ' item',
-                'n-random-ps',
-                'Load a new random ' + datasetLabel + ' item',
-                '',
-                '#n-help'
-            ));
-            portletLink.children().click(function(e) {
-                e.preventDefault();
-                e.target.innerHTML = '<img src="https://upload.wikimedia.org/' +
-                    'wikipedia/commons/f/f8/Ajax-loader%282%29.gif" class="ajax"/>';
-                $.ajax({
-                    url: FREEBASE_ENTITY_DATA_URL.replace(/\{\{qid\}\}/, 'any') +
-                    '?dataset=' + dataset
-                }).done(function(data) {
-                    var newQid = data[0].statement.split(/\t/)[0];
-                    document.location.href = 'https://www.wikidata.org/wiki/' + newQid;
-                }).fail(function() {
-                    return reportError('Could not obtain random Primary Sources item');
-                });
-            });
-
-            mw.loader.using(
-                ['jquery.tipsy', 'oojs-ui', 'wikibase.dataTypeStore'], function() {
-                    windowManager = new OO.ui.WindowManager();
-                    $('body').append(windowManager.$element);
-
-                    var configButton = $('<span>')
-                        .attr({
-                            id: 'ps-config-button',
-                            title: 'Primary Sources options'
-                        })
-                        .tipsy()
-                        .appendTo(portletLink);
-                    configDialog(configButton);
-
-                    var listButton = $(mw.util.addPortletLink(
-                        'p-tb',
-                        '#',
-                        'Primary Sources list',
-                        'n-ps-list',
-                        'List statements from Primary Sources'
-                    ));
-                    listDialog(listButton);
-                });
-        })();
+        // (function createRandomFreebaseItemLink() {
+        //     var datasetLabel = (dataset === '') ? 'Primary Sources' : dataset;
+        //     var portletLink = $(mw.util.addPortletLink(
+        //         'p-navigation',
+        //         '#',
+        //         'Random ' + datasetLabel + ' item',
+        //         'n-random-ps',
+        //         'Load a new random ' + datasetLabel + ' item',
+        //         '',
+        //         '#n-help'
+        //     ));
+        //     portletLink.children().click(function(e) {
+        //         e.preventDefault();
+        //         e.target.innerHTML = '<img src="https://upload.wikimedia.org/' +
+        //             'wikipedia/commons/f/f8/Ajax-loader%282%29.gif" class="ajax"/>';
+        //         $.ajax({
+        //             url: FREEBASE_ENTITY_DATA_URL.replace(/\{\{qid\}\}/, 'any') +
+        //             '?dataset=' + dataset
+        //         }).done(function(data) {
+        //             var newQid = data[0].statement.split(/\t/)[0];
+        //             document.location.href = 'https://www.wikidata.org/wiki/' + newQid;
+        //         }).fail(function() {
+        //             return reportError('Could not obtain random Primary Sources item');
+        //         });
+        //     });
+        //
+        //     mw.loader.using(
+        //         ['jquery.tipsy', 'oojs-ui', 'wikibase.dataTypeStore'], function() {
+        //             windowManager = new OO.ui.WindowManager();
+        //             $('body').append(windowManager.$element);
+        //
+        //             var configButton = $('<span>')
+        //                 .attr({
+        //                     id: 'ps-config-button',
+        //                     title: 'Primary Sources options'
+        //                 })
+        //                 .tipsy()
+        //                 .appendTo(portletLink);
+        //             configDialog(configButton);
+        //
+        //             var listButton = $(mw.util.addPortletLink(
+        //                 'p-tb',
+        //                 '#',
+        //                 'Primary Sources list',
+        //                 'n-ps-list',
+        //                 'List statements from Primary Sources'
+        //             ));
+        //             listDialog(listButton);
+        //         });
+        // })();
 
         // Handle clicks on approve/edit/reject buttons
         (function addClickHandlers() {
@@ -605,22 +605,22 @@ $(function() {
         });
     }
 
-    function isBlackListedBuilder(blacklistedSourceUrls) {
-        return function(url) {
-            try {
-                var url = new URL(url);
-            } catch (e) {
-                return false;
-            }
-
-            for (var i in blacklistedSourceUrls) {
-                if (url.host.indexOf(blacklistedSourceUrls[i]) !== -1) {
-                    return true;
-                }
-            }
-            return false;
-        };
-    }
+    // function isBlackListedBuilder(blacklistedSourceUrls) {
+    //     return function(url) {
+    //         try {
+    //             var url = new URL(url);
+    //         } catch (e) {
+    //             return false;
+    //         }
+    //
+    //         for (var i in blacklistedSourceUrls) {
+    //             if (url.host.indexOf(blacklistedSourceUrls[i]) !== -1) {
+    //                 return true;
+    //             }
+    //         }
+    //         return false;
+    //     };
+    // }
 
     function parsePrimarySourcesStatement(statement, isBlacklisted) {
         var id = statement.id;

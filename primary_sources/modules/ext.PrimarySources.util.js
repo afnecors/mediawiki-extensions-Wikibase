@@ -4,6 +4,19 @@
     var util = {};
 
     /**
+     * Print in console log only if global var DEBUG is True
+     *
+     * @type {{log: log}}
+     */
+    util.debug = {
+        log: function(message) {
+            if (ps.global.DEBUG) {
+                console.log('PST: ' + message);
+            }
+        }
+    };
+
+    /**
      * Print a tooltip with custo error message
      * @param error
      */
@@ -39,7 +52,7 @@
             }));
             return callback(data);
         }).fail(function() {
-            debug.log('Could not obtain datasets');
+            util.debug.log('Could not obtain datasets');
         });
     };
 
@@ -184,7 +197,7 @@
      */
     util.jsonToTsvValue = function (dataValue, dataType) {
         if (!dataValue.type) {
-            debug.log('No data value type given');
+            util.debug.log('No data value type given');
             return dataValue.value;
         }
         switch (dataValue.type) {
@@ -218,7 +231,7 @@
                         return 'P' + dataValue.value['numeric-id'];
                 }
         }
-        debug.log('Unknown data value type ' + dataValue.type);
+        util.debug.log('Unknown data value type ' + dataValue.type);
         return dataValue.value;
     };
 
@@ -256,6 +269,23 @@
             .replace(/</g, '&lt;') // <
             .replace(/>/g, '&gt;') // >
             .replace(/\"/g, '&quot;'); // "
+    };
+
+    util.isBlackListedBuilder = function (blacklistedSourceUrls) {
+        return function(url) {
+            try {
+                var url = new URL(url);
+            } catch (e) {
+                return false;
+            }
+
+            for (var i in blacklistedSourceUrls) {
+                if (url.host.indexOf(blacklistedSourceUrls[i]) !== -1) {
+                    return true;
+                }
+            }
+            return false;
+        };
     };
 
 

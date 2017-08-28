@@ -211,5 +211,10 @@
 
     global.qid = null;
 
+    global.qid = getQid();
+    if (!global.qid) {
+        return debug.log('Did not manage to load the QID.');
+    }
+
     ps.global = global;
 }( primarySources ) );
