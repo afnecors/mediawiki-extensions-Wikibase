@@ -271,6 +271,11 @@
             .replace(/\"/g, '&quot;'); // "
     };
 
+    /**
+     *
+     * @param blacklistedSourceUrls
+     * @returns {Function}
+     */
     util.isBlackListedBuilder = function (blacklistedSourceUrls) {
         return function(url) {
             try {
